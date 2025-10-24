@@ -1,0 +1,149 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  name        String?
+  provider    String?   // 'google', 'github', 'credentials'
+  providerId  String?   // OAuth provider's user ID
+  password    String?   // Only for credential-based auth
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  projects    Project[]
+}
+
+model Project {
+  id              String       @id @default(uuid())
+  name            String
+  originalBaseUrl String
+  proxyUrl        String       @unique
+  createdAt       DateTime     @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  endpoints ApiEndpoint[]
+  analyticsAggregations AnalyticsAggregation[]
+  apiRequestLogs ApiRequestLog[]
+}
+
+model ApiEndpoint {
+  id              String   @id @default(uuid())
+  name            String
+  method          String   // HTTP method (GET, POST, PUT, DELETE, etc.)
+  path            String   // API endpoint path
+  createdAt       DateTime @default(now())
+
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  securityIssues SecurityIssue[]
+}
+
+// --- IMPROVED MODEL ---
+model ApiRequestLog {
+  id            String   @id @default(uuid())
+  method        String
+  path          String
+  responseCode  Int?     
+  createdAt     DateTime @default(now())
+
+  // Request/Response timing and size
+  durationMs    Int?     // in milliseconds
+  requestSize   Int?     // in bytes
+  responseSize  Int?     // in bytes
+
+  // Request details
+  ipAddress     String
+  userAgent     String?
+  requestHeaders Json?   // Store as JSON
+  requestBody   String?  // Store request body
+  queryParams   Json?    // Store query parameters as JSON
+
+  // Response details
+  responseHeaders Json?   // Store response headers as JSON
+  responseBody   String? // Store response body
+
+  // Location data
+  city          String?
+  region        String?
+  country       String?
+  latitude      Float?
+  longitude     Float?
+
+  // Security data
+  securityScore  Int?
+  securityIssues Json?
+
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  // Indexes for better performance
+  @@index([projectId, createdAt])
+  @@index([responseCode])
+  @@index([createdAt])
+}
+
+model SecurityIssue {
+  id            String   @id @default(uuid())
+  type          String   // e.g., "missing_https", "weak_auth", "sql_injection"
+  severity       String   // "low", "medium", "high", "critical"
+  title         String
+  description   String
+  recommendation String?
+  createdAt     DateTime @default(now())
+
+  apiEndpoint   ApiEndpoint @relation(fields: [apiEndpointId], references: [id])
+  apiEndpointId String
+
+  // Indexes for better performance
+  @@index([apiEndpointId, createdAt])
+  @@index([severity])
+}
+
+// Analytics aggregation model for storing computed metrics
+model AnalyticsAggregation {
+  id        String   @id @default(uuid())
+  projectId String
+  date      DateTime // Date for daily aggregations
+  hour      Int?     // Hour for hourly aggregations (0-23)
+  
+  // Request metrics
+  totalRequests Int      @default(0)
+  errorRequests Int      @default(0)
+  avgResponseTime Float? // Average response time in ms
+  minResponseTime Float? // Minimum response time in ms
+  maxResponseTime Float? // Maximum response time in ms
+  
+  // Size metrics
+  totalRequestSize  Int @default(0)  // Total bytes received
+  totalResponseSize Int @default(0)  // Total bytes sent
+  
+  // Security metrics
+  avgSecurityScore Float? // Average security score
+  criticalIssues   Int @default(0) // Count of critical security issues
+  highIssues       Int @default(0) // Count of high severity issues
+  
+  // Geographic metrics
+  uniqueIPs        Int @default(0) // Unique IP addresses
+  uniqueCountries  Int @default(0) // Unique countries
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  project Project @relation(fields: [projectId], references: [id])
+  
+  // Indexes for better performance
+  @@index([projectId, date])
+  @@index([date])
+  @@unique([projectId, date, hour])
+}
