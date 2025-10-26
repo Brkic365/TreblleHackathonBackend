@@ -47,6 +47,7 @@ A comprehensive API monitoring and analytics backend built for the Treblle Hacka
    JWT_SECRET=your-jwt-secret-key
    INTERNAL_API_KEY=your-internal-api-key
    DATABASE_URL="file:./prisma/dev.db"
+   PROXY_BASE_URL="http://localhost:8080"
    ```
 
 4. **Database Setup**
