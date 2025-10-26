@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx prisma generate --schema=prisma/schema.local.prisma && tsx watch src/index.ts",
-    "build": "npx prisma db push && npx prisma generate",
+    "build": "npx prisma db push --accept-data-loss && npx prisma generate",
     "start": "tsx src/index.ts",
     "postinstall": "npx prisma generate",
     "db:migrate:local": "npx prisma migrate dev --schema=prisma/schema.local.prisma",
