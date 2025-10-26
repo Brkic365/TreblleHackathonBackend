@@ -8,7 +8,11 @@
     "dev": "tsx watch src/index.ts",
     "build": "npx prisma generate && npx prisma migrate deploy",
     "start": "tsx src/index.ts",
-    "postinstall": "npx prisma generate"
+    "postinstall": "npx prisma generate",
+    "db:migrate:local": "cp prisma/schema.local.prisma prisma/schema.prisma && npx prisma migrate dev",
+    "db:migrate:deploy": "npx prisma migrate deploy",
+    "db:generate:local": "cp prisma/schema.local.prisma prisma/schema.prisma && npx prisma generate",
+    "db:generate": "npx prisma generate"
   },
   "keywords": [],
   "author": "",

@@ -1,14 +1,15 @@
-// prisma/schema.prisma
+// prisma/schema.local.prisma - For local development with SQLite
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
+// Copy all models from schema.prisma
 model User {
   id          String    @id @default(uuid())
   email       String    @unique
@@ -109,7 +110,6 @@ model SecurityIssue {
   @@index([severity])
 }
 
-// Analytics aggregation model for storing computed metrics
 model AnalyticsAggregation {
   id        String   @id @default(uuid())
   projectId String
@@ -146,3 +146,4 @@ model AnalyticsAggregation {
   @@index([date])
   @@unique([projectId, date, hour])
 }
+
