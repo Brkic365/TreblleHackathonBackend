@@ -4,7 +4,8 @@ import cors from 'cors';
 import apiRoutes from './api/index.js';
 import proxyRoutes from './api/routes/proxy.js';
 
-dotenv.config({ path: '.env.local' });
+// Load .env.local in development, .env in production
+dotenv.config({ path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local' });
 
 const app = express();
 const PORT = process.env['PORT'] || 8080;
