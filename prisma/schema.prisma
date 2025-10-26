@@ -49,7 +49,6 @@ model ApiEndpoint {
   securityIssues SecurityIssue[]
 }
 
-// --- IMPROVED MODEL ---
 model ApiRequestLog {
   id            String   @id @default(uuid())
   method        String

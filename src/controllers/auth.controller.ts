@@ -162,7 +162,7 @@ export const handleSession = async (req: Request, res: Response) => {
     }
 };
 
-export const createOAuthUser = async (req: Request, res: Response): Promise<void> => {
+export const createOAuthUser = async (req: Request, res: Response) => {
     const apiKey = req.headers['x-internal-api-key'];
     if (apiKey !== process.env['INTERNAL_API_KEY']) {
         return res.status(401).json({ error: 'Unauthorized' });
