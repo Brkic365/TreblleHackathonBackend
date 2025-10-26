@@ -5,13 +5,13 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/index.ts",
-    "build": "npx prisma generate && npx prisma migrate deploy",
+    "dev": "npx prisma generate --schema=prisma/schema.local.prisma && tsx watch src/index.ts",
+    "build": "npx prisma db push && npx prisma generate",
     "start": "tsx src/index.ts",
     "postinstall": "npx prisma generate",
-    "db:migrate:local": "cp prisma/schema.local.prisma prisma/schema.prisma && npx prisma migrate dev",
+    "db:migrate:local": "npx prisma migrate dev --schema=prisma/schema.local.prisma",
     "db:migrate:deploy": "npx prisma migrate deploy",
-    "db:generate:local": "cp prisma/schema.local.prisma prisma/schema.prisma && npx prisma generate",
+    "db:generate:local": "npx prisma generate --schema=prisma/schema.local.prisma",
     "db:generate": "npx prisma generate"
   },
   "keywords": [],
